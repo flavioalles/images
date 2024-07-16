@@ -5,6 +5,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from src.images.models.base import Base
+from src.images.models.image import Image  # noqa: F401
 from src.images.settings.base import Settings
 
 
