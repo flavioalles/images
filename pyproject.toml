@@ -11,6 +11,7 @@ package-mode = false
 python = "3.12.4"
 pydantic = "~2.8"
 pydantic-settings = "~2.3"
+sqlalchemy = {version = "~2.0", extras = ["postgresql-psycopg2binary"]}
 
 
 [tool.poetry.group.dev.dependencies]
