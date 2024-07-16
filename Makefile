@@ -41,3 +41,7 @@ start-db:
 .PHONY: stop-db
 stop-db:
 	@docker stop images-db
+
+.PHONY: connect-db
+connect-db:
+	@docker exec -i --tty images-db psql -U postgres -p 5432 -d images
