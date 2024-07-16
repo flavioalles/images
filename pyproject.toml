@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "images"
+version = "0.1.0"
+description = "A simple image uploading application."
+authors = ["Flavio Alles <flavio.alles@proton.me>"]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "3.12.4"
+
+
+[tool.poetry.group.dev.dependencies]
+ipython = "~8.26"
+ipdb = "~0.13"
+black = "~24.4"
+mypy = "~1.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
