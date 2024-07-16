@@ -5,6 +5,8 @@ help:
 	@echo "\033[32mcheck-style\033[0m\t\tCheck code style using black"
 	@echo "\033[32mformat-code\033[0m\t\tFormat code using black"
 	@echo "\033[32mcheck-typing\033[0m\t\tCheck typing using mypy"
+	@echo "\033[32mstart-db\033[0m\t\tStart the images-db container"
+	@echo "\033[32mstop-db\033[0m\t\t\tStop the images-db container"
 
 .PHONY: check-style
 check-style:
@@ -17,3 +19,25 @@ format-code:
 .PHONY: check-typing
 check-typing:
 	@poetry run mypy --config-file pyproject.toml src/
+
+.PHONY: start-db
+start-db:
+	# NOTE: Using data dir. in the project root to persist data.
+	# Avoiding use of privileged location (e.g. /var/lib/postgresql/data
+	# or /var/lib/docker/volumes/postgresql/images/) to bypass need for
+	# admin privileges.
+	@mkdir -p ./data/docker/volumes/postgresql/images/
+	@if [ -z "${POSTGRES_PASSWORD}" ]; then \
+		echo "POSTGRES_PASSWORD is not set. Exiting."; \
+		exit 1; \
+	fi
+	@docker run --name images-db \
+		--env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
+		--publish 5432:5432 \
+		--rm \
+		--volume ./data/docker/volumes/postgresql/images/:/var/lib/postgresql/data \
+		postgres:15.7
+
+.PHONY: stop-db
+stop-db:
+	@docker stop images-db
