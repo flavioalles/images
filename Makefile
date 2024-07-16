@@ -45,3 +45,11 @@ stop-db:
 .PHONY: connect-db
 connect-db:
 	@docker exec -i --tty images-db psql -U postgres -p 5432 -d images
+
+.PHONY: run-tests
+run-tests:
+	@if [ -z "${DATABASE_URL}" ]; then \
+		echo "DATABASE_URL is not set. Exiting."; \
+		exit 1; \
+	fi
+	@poetry run pytest --verbose --cov=src/ tests/
