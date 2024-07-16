@@ -17,6 +17,36 @@ ipdb = "~0.13"
 black = "~24.4"
 mypy = "~1.10"
 
+[tool.black]
+line-length = 88
+target-version = ['py312']
+
+[tool.mypy]
+# platform
+python_version = 3.12
+
+# import discovery
+namespace_packages = true
+
+# dynamic typing
+disallow_any_expr = true
+disallow_any_decorated = true
+disallow_any_explicit = true
+disallow_any_generics = true
+
+# untyped defs and calls
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+
+# warnings
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+
+# msc
+pretty = true
+warn_unused_configs = true
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
