@@ -2,6 +2,7 @@
 help:
 	@echo "\033[1mimages\033[0m"
 	@echo "\n\033[1mAvailable targets:\033[0m"
+	@echo "\033[32mrepl\033[0m\t\t\tStart an interactive Python shell"
 	@echo "\033[32mcheck-style\033[0m\t\tCheck code style using black"
 	@echo "\033[32mformat-code\033[0m\t\tFormat code using black"
 	@echo "\033[32mcheck-typing\033[0m\t\tCheck typing using mypy"
@@ -9,6 +10,10 @@ help:
 	@echo "\033[32mstop-db\033[0m\t\t\tStop the images-db container"
 	@echo "\033[32mconnect-db\033[0m\t\tConnect to the images-db container"
 	@echo "\033[32mrun-tests\033[0m\t\tRun tests using pytest"
+
+.PHONY: repl
+repl:
+	@poetry run ipython
 
 .PHONY: check-style
 check-style:
