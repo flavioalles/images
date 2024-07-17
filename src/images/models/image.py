@@ -1,8 +1,10 @@
 from enum import Enum as PyEnum
 
 from sqlalchemy import Column, Unicode, Enum
+from sqlalchemy.orm import validates
 
 from src.images.models.base import Base
+from src.images.utils.image import sha256_checksum
 
 
 class ImageStatus(PyEnum):
@@ -53,3 +55,24 @@ class Image(Base):
 
     def __repr__(self):
         return f"<Image(id={self.id}, path={self.path}, checksum={self.checksum}, status={self.status})>"
+
+    @validates("path")
+    def _checksum(self, key, value):
+        """
+        Compute the checksum of the image.
+
+        Parameters:
+            key (str): The key of the attribute.
+            value (str): The value of the attribute.
+
+        Returns:
+            str: The SHA-256 checksum of the image.
+        """
+        try:
+            self.checksum = sha256_checksum(value)
+        except Exception as exc:
+            self.status = ImageStatus.CORRUPTED
+        else:
+            self.status = ImageStatus.DONE
+
+        return value
