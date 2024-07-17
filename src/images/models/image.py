@@ -41,12 +41,12 @@ class Image(Base):
         nullable=False,
         doc="The unique path to the image file.",
     )
-    checksum = Column(
+    _checksum = Column(
         Unicode(64),
         nullable=True,
         doc="SHA-256 checksum of the image for integrity verification.",
     )
-    status = Column(
+    _status = Column(
         Enum(ImageStatus),
         default=ImageStatus.IN_PROGRESS,
         nullable=False,
@@ -57,7 +57,7 @@ class Image(Base):
         return f"<Image(id={self.id}, path={self.path}, checksum={self.checksum}, status={self.status})>"
 
     @validates("path")
-    def _checksum(self, key, value):
+    def _set_checksum(self, key, value):
         """
         Compute the checksum of the image.
 
@@ -69,10 +69,30 @@ class Image(Base):
             str: The SHA-256 checksum of the image.
         """
         try:
-            self.checksum = sha256_checksum(value)
+            self._checksum = sha256_checksum(value)
         except Exception as exc:
-            self.status = ImageStatus.CORRUPTED
+            self._status = ImageStatus.CORRUPTED
         else:
-            self.status = ImageStatus.DONE
+            self._status = ImageStatus.DONE
 
         return value
+
+    @property
+    def checksum(self):
+        return self._checksum
+
+    @checksum.setter
+    def checksum(self, value):
+        raise AttributeError(
+            "Image.checksum is a derived attribute and cannot be set directly."
+        )
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        raise AttributeError(
+            "Image.status is a derived attribute and cannot be set directly."
+        )
