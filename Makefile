@@ -55,8 +55,8 @@ connect-db:
 
 .PHONY: run-tests
 run-tests:
-	@if [ -z "${DATABASE_URL}" ]; then \
-		echo "DATABASE_URL is not set. Exiting."; \
+	@if [ -z "${TEST_DATABASE_URL}" ]; then \
+		echo "TEST_DATABASE_URL is not set. Exiting."; \
 		exit 1; \
 	fi
-	@poetry run pytest --verbose --cov=src/ tests/
+	@DATABASE_URL=${TEST_DATABASE_URL} poetry run pytest --verbose --cov=src/ tests/
