@@ -7,6 +7,8 @@ help:
 	@echo "\033[32mcheck-typing\033[0m\t\tCheck typing using mypy"
 	@echo "\033[32mstart-db\033[0m\t\tStart the images-db container"
 	@echo "\033[32mstop-db\033[0m\t\t\tStop the images-db container"
+	@echo "\033[32mconnect-db\033[0m\t\tConnect to the images-db container"
+	@echo "\033[32mrun-tests\033[0m\t\tRun tests using pytest"
 
 .PHONY: check-style
 check-style:
