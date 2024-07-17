@@ -31,12 +31,10 @@ class Base(DeclarativeBase):
         index=True,
         nullable=False,
     )
-    created = Column(
-        DateTime(timezone=True), default=func.utc_timestamp(), nullable=False
-    )
+    created = Column(DateTime(timezone=True), default=func.now(), nullable=False)
     updated = Column(
         DateTime(timezone=True),
-        default=func.utc_timestamp(),
-        onupdate=func.utc_timestamp(),
+        default=func.now(),
+        onupdate=func.now(),
         nullable=False,
     )
