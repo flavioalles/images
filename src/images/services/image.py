@@ -10,6 +10,7 @@ from sqlalchemy.exc import (
     InvalidRequestError,
     OperationalError,
 )
+from sqlalchemy.orm.query import Query
 
 from src.images.models.image import Image, ImageStatus
 from src.images.services.base import BaseService
@@ -89,9 +90,13 @@ class ImageService(BaseService):
         """Get an image by ID."""
         raise NotImplementedError()
 
-    def list(self):
-        """List all images."""
-        raise NotImplementedError()
+    def list(self) -> Query:
+        """List all images.
+
+        Returns:
+            Query: A query object representing the list of images.
+        """
+        return self.session.query(Image).order_by(Image.created.asc())
 
     def delete(self):
         """Delete an image."""
