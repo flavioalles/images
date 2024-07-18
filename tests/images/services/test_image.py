@@ -95,12 +95,29 @@ class TestListImageService:
     Test class for the list image service.
     """
 
-    def test_list_image_service(self, image_service):
+    def test_list_image_service(self, image_service, large_image, small_image):
         """
         Test method for the list image service.
         """
-        with pytest.raises(NotImplementedError):
-            image_service.list()
+        large_image = image_service.create(large_image)
+        small_image = image_service.create(small_image)
+
+        the_list = image_service.list()
+
+        assert the_list.count() == 2
+
+        first = the_list.first()
+        last = the_list.all()[-1]
+
+        assert first.id == large_image.id
+        assert first.path == large_image.path
+        assert first.checksum == large_image.checksum
+        assert first.status == large_image.status
+
+        assert last.id == small_image.id
+        assert last.path == small_image.path
+        assert last.checksum == small_image.checksum
+        assert last.status == small_image.status
 
 
 class TestDeleteImageService:
