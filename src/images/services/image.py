@@ -109,6 +109,8 @@ class ImageService(BaseService):
             Image: The processed image object.
         """
         # TODO: Create self.base_path if non-existent?
+        # NOTE: We're resizing the image regardless of its size - i.e. downwards or
+        # upwards.
         output_image_path = (
             f"{self.base_path}/{image.id}.{os.path.basename(uploaded_image.path)}"
         )
