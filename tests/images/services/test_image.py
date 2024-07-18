@@ -1,6 +1,10 @@
+import os
+
 import pytest
 
+from src.images.models.image import Image, ImageStatus
 from src.images.services.image import ImageService
+from src.images.utils.image import sha256_checksum
 
 
 class TestCreateImageService:
@@ -8,12 +12,25 @@ class TestCreateImageService:
     Test class for the create image service.
     """
 
-    def test_create_image_service(self, image_service):
+    def test_create_image_service_when_successful(self, image_service, large_image):
         """
         Test method for the create image service.
         """
-        with pytest.raises(NotImplementedError):
-            image_service.create()
+        assert image_service.session.query(Image).count() == 0
+
+        image = image_service.create(large_image)
+
+        assert image_service.session.query(Image).count() == 1
+        assert (
+            image.path
+            == f"{image_service.base_path}/{image.id}.{os.path.basename(large_image.path)}"
+        )
+        assert image.checksum == sha256_checksum(image.path)
+        assert image.status == ImageStatus.DONE
+        assert image.created is not None
+        assert image.updated is not None
+        # NOTE: assert file is moved
+        assert not os.path.exists(large_image.path) and os.path.exists(image.path)
 
 
 class TestUpdateImageService:
