@@ -13,6 +13,7 @@ pydantic = "~2.8"
 pydantic-settings = "~2.3"
 sqlalchemy = {version = "~2.0", extras = ["postgresql-psycopg2binary"]}
 alembic = "~1.13"
+pillow = "~10.4"
 
 
 [tool.poetry.group.dev.dependencies]

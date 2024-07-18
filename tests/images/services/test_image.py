@@ -1,6 +1,7 @@
 import os
 
 import pytest
+from PIL import Image as PILImage
 
 from src.images.models.image import Image, ImageStatus
 from src.images.services.image import ImageService
@@ -29,8 +30,10 @@ class TestCreateImageService:
         assert image.status == ImageStatus.DONE
         assert image.created is not None
         assert image.updated is not None
-        # NOTE: assert file is moved
-        assert not os.path.exists(large_image.path) and os.path.exists(image.path)
+        assert os.path.exists(image.path)
+
+        with PILImage.open(image.path) as img:
+            assert img.size[0] == image_service.image_width
 
 
 class TestUpdateImageService:
