@@ -13,9 +13,12 @@ class TestCreateImageService:
     Test class for the create image service.
     """
 
-    def test_create_image_service_when_successful(self, image_service, large_image):
+    def test_successful_image_service_create_with_large_image(
+        self, image_service, large_image
+    ):
         """
-        Test method for the create image service.
+        Test method for the create image service for an image that is wider than
+        ImageService.image_width.
         """
         assert image_service.session.query(Image).count() == 0
 
@@ -25,6 +28,31 @@ class TestCreateImageService:
         assert (
             image.path
             == f"{image_service.base_path}/{image.id}.{os.path.basename(large_image.path)}"
+        )
+        assert image.checksum == sha256_checksum(image.path)
+        assert image.status == ImageStatus.DONE
+        assert image.created is not None
+        assert image.updated is not None
+        assert os.path.exists(image.path)
+
+        with PILImage.open(image.path) as img:
+            assert img.size[0] == image_service.image_width
+
+    def test_successful_image_service_create_with_small_image(
+        self, image_service, small_image
+    ):
+        """
+        Test method for the create image service for an image that is narrower than
+        ImageService.image_width.
+        """
+        assert image_service.session.query(Image).count() == 0
+
+        image = image_service.create(small_image)
+
+        assert image_service.session.query(Image).count() == 1
+        assert (
+            image.path
+            == f"{image_service.base_path}/{image.id}.{os.path.basename(small_image.path)}"
         )
         assert image.checksum == sha256_checksum(image.path)
         assert image.status == ImageStatus.DONE

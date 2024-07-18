@@ -51,12 +51,12 @@ def image_service():
     service.session.rollback()
 
 
-@pytest.fixture(scope="function")
-def large_image(image_service):
+def tmp_image(path):
+    prefix, suffix = os.path.splitext(os.path.basename(path))
     with (
-        open("tests/images/fixtures/large.image.jpg", "rb") as original,
+        open(path, "rb") as original,
         tempfile.NamedTemporaryFile(
-            prefix="large.image.", suffix=".jpg", delete=False, mode="wb"
+            prefix=f"{prefix}.", suffix=suffix, delete=False, mode="wb"
         ) as tmp,
     ):
         shutil.copyfileobj(original, tmp)
@@ -66,12 +66,32 @@ def large_image(image_service):
             content_type="image/jpeg",
         )
 
-    yield tmp_image
+    return tmp_image
 
+
+def cleanup_tmp_image(tmp, image_service):
     for path in glob.glob(
-        os.path.join(image_service.base_path, f"*{os.path.basename(tmp.name)}")
+        os.path.join(image_service.base_path, f"*{os.path.basename(tmp.path)}")
     ):
         try:
             os.remove(path)
         except FileNotFoundError as e:
             pass
+
+
+@pytest.fixture(scope="function")
+def large_image(image_service):
+    tmp = tmp_image("tests/images/fixtures/large.image.jpg")
+
+    yield tmp
+
+    cleanup_tmp_image(tmp, image_service)
+
+
+@pytest.fixture(scope="function")
+def small_image(image_service):
+    tmp = tmp_image("tests/images/fixtures/small.image.jpg")
+
+    yield tmp
+
+    cleanup_tmp_image(tmp, image_service)
