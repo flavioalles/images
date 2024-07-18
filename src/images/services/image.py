@@ -1,9 +1,9 @@
 import os.path
-import shutil
 import uuid
 from dataclasses import dataclass
 from typing import Any
 
+from PIL import Image as PILImage
 from sqlalchemy.exc import (
     DataError,
     IntegrityError,
@@ -14,6 +14,7 @@ from sqlalchemy.exc import (
 from src.images.models.image import Image, ImageStatus
 from src.images.services.base import BaseService
 from src.images.services.exceptions import ClientError, ConflictError, ServerError
+from src.images.utils.image import resize
 
 
 @dataclass
@@ -39,7 +40,9 @@ class TmpImage:
 class ImageService(BaseService):
     """A service for managing images."""
 
+    # TODO: make each come from a config file - while maintaining default values.
     base_path: str = "data/images"
+    image_width: int = 1500
 
     def create(self, uploaded_image: TmpImage) -> Image:
         """
@@ -96,7 +99,7 @@ class ImageService(BaseService):
 
     def _process(self, image: Image, uploaded_image: TmpImage) -> Image:
         """
-        Process an image.
+        Process an image - i.e. resize and set Image.path.
 
         Args:
             image (Image): The original image object.
@@ -105,11 +108,17 @@ class ImageService(BaseService):
         Returns:
             Image: The processed image object.
         """
-        # TODO: resize as per the requirements.
         # TODO: Create self.base_path if non-existent?
-        image.path = shutil.move(
-            uploaded_image.path,
-            f"{self.base_path}/{image.id}.{os.path.basename(uploaded_image.path)}",
+        output_image_path = (
+            f"{self.base_path}/{image.id}.{os.path.basename(uploaded_image.path)}"
         )
+        with PILImage.open(uploaded_image.path) as input_image:
+            output_image = resize(
+                input_image,
+                self.image_width,
+            )
+            output_image.save(output_image_path)
+
+        image.path = output_image_path
 
         return image
