@@ -10,6 +10,8 @@ help:
 	@echo "\033[32mstop-db\033[0m\t\t\tStop the images-db container"
 	@echo "\033[32mconnect-db\033[0m\t\tConnect to the images-db container"
 	@echo "\033[32mrun-tests\033[0m\t\tRun tests using pytest"
+	@echo "\033[32mrun-dev-app\033[0m\t\tRun the development version (i.e. reloading) of the (FastAPI) app"
+	@echo "\033[32mrun-app\033[0m\t\t\tRun the production version of the (FastAPI) app"
 
 .PHONY: repl
 repl:
