@@ -60,3 +60,19 @@ run-tests:
 		exit 1; \
 	fi
 	@DATABASE_URL=${TEST_DATABASE_URL} poetry run pytest --verbose --cov=src/ tests/
+
+.PHONY: run-dev-app
+run-dev-app:
+	@if [ -z "${APP_DATABASE_URL}" ]; then \
+		echo "APP_DATABASE_URL is not set. Exiting."; \
+		exit 1; \
+	fi
+	@DATABASE_URL=${APP_DATABASE_URL} poetry run fastapi dev src/images/endpoints/app.py
+
+.PHONY: run-app
+run-app:
+	@if [ -z "${APP_DATABASE_URL}" ]; then \
+		echo "APP_DATABASE_URL is not set. Exiting."; \
+		exit 1; \
+	fi
+	@DATABASE_URL=${APP_DATABASE_URL} poetry run fastapi src/images/endpoints/app.py

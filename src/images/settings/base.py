@@ -14,6 +14,7 @@ class Settings(BaseSettings):
 
     app_name: str = "images"
     description: str = "An API providing a service that handles image uploads."
+    debug: bool = False
     database_url: str = Field(
         ..., env="DATABASE_URL", description="Database connection URL."
     )
