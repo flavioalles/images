@@ -1,4 +1,6 @@
 import json
+import os.path
+
 import pytest
 
 from src.images.models.image import Image
@@ -11,7 +13,9 @@ class TestCreateImageEndpoint:
 
     resource: str = "/api/submit"
 
-    def test_when_create_image_is_successful(self, test_app, image_service):
+    def test_when_create_image_is_successful(
+        self, test_app, image_service, large_image
+    ):
         """
         Test case for creating an image successfully.
 
@@ -24,10 +28,16 @@ class TestCreateImageEndpoint:
         """
         assert image_service.session.query(Image).count() == 0
 
-        with open("tests/images/fixtures/large.image.jpg", "rb") as image_file:
+        with open(large_image.path, "rb") as image_file:
             response = test_app.post(
                 self.resource,
-                files={"image_file": ("image.jpg", image_file, "image/jpeg")},
+                files={
+                    "image_file": (
+                        os.path.basename(large_image.path),
+                        image_file,
+                        large_image.content_type,
+                    )
+                },
             )
 
         assert image_service.session.query(Image).count() == 1
@@ -53,7 +63,9 @@ class TestListImagesEndpoint:
 
     resource: str = "/api/list"
 
-    def test_when_list_images_is_successful(self, test_app, image_service):
+    def test_when_list_images_is_successful(
+        self, test_app, image_service, large_image, small_image
+    ):
         """
         Test case for listing images successfully.
 
@@ -66,14 +78,17 @@ class TestListImagesEndpoint:
         """
         assert image_service.session.query(Image).count() == 0
 
-        for path in [
-            "tests/images/fixtures/large.image.jpg",
-            "tests/images/fixtures/small.image.jpg",
-        ]:
-            with open(path, "rb") as image_file:
+        for image in [large_image, small_image]:
+            with open(image.path, "rb") as image_file:
                 test_app.post(
                     "/api/submit",
-                    files={"image_file": ("image.jpg", image_file, "image/jpeg")},
+                    files={
+                        "image_file": (
+                            os.path.basename(image.path),
+                            image_file,
+                            image.content_type,
+                        )
+                    },
                 )
 
         response = test_app.get(self.resource)
