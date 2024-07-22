@@ -23,6 +23,10 @@ class Base(DeclarativeBase):
 
     __abstract__ = True
 
+    # NOTE: For pagination reasons, id becoming an auto-incrementing integer is ideal -
+    # since it would avoid reading (best case scenatio - i.e. contiguous ID's/no deletions)
+    # OFFSET rows from the database.
+    # TODO: Drop use of UUID for id (implement auto-incremeting integers).
     id = Column(
         UUID(as_uuid=True),
         primary_key=True,

@@ -104,10 +104,10 @@ class TestListImageService:
 
         the_list = image_service.list()
 
-        assert the_list.count() == 2
+        assert the_list.query.count() == the_list.total == 2
 
-        first = the_list.first()
-        last = the_list.all()[-1]
+        first = the_list.query.first()
+        last = the_list.query.all()[-1]
 
         assert first.id == large_image.id
         assert first.path == large_image.path
@@ -118,6 +118,26 @@ class TestListImageService:
         assert last.path == small_image.path
         assert last.checksum == small_image.checksum
         assert last.status == small_image.status
+
+        the_list = image_service.list(offset=0, limit=1)
+
+        assert the_list.query.count() != the_list.total
+        assert the_list.query.count() == 1
+        assert the_list.total == 2
+        assert the_list.query.first().id == large_image.id
+
+        the_list = image_service.list(offset=1, limit=1)
+
+        assert the_list.query.count() != the_list.total
+        assert the_list.query.count() == 1
+        assert the_list.total == 2
+        assert the_list.query.first().id == small_image.id
+
+        the_list = image_service.list(offset=2, limit=1)
+
+        assert the_list.query.count() != the_list.total
+        assert the_list.query.count() == 0
+        assert the_list.total == 2
 
 
 class TestDeleteImageService:

@@ -37,6 +37,22 @@ class TmpImage:
     content_type: str
 
 
+# NOTE: There should be a more appropriate module for this class.
+@dataclass
+class QueryPlus:
+    """
+    A query object with additional metadata.
+
+    Attributes:
+        query (Query): The query object.
+        total (int): The total number of items in the table queried - i.e. not
+            necessarily in the query itself.
+    """
+
+    query: Query
+    total: int
+
+
 @dataclass
 class ImageService(BaseService):
     """A service for managing images."""
@@ -90,13 +106,20 @@ class ImageService(BaseService):
         """Get an image by ID."""
         raise NotImplementedError()
 
-    def list(self) -> Query:
+    def list(self, offset: int | None = None, limit: int | None = None) -> QueryPlus:
         """List all images.
 
         Returns:
             Query: A query object representing the list of images.
         """
-        return self.session.query(Image).order_by(Image.created.asc())
+        try:
+            query = self.session.query(Image).order_by(Image.created.asc())
+            return QueryPlus(
+                query=query.offset(offset).limit(limit), total=query.count()
+            )
+        except (DataError, ValueError) as exc:
+            self.session.rollback()
+            raise ClientError(message=str(exc))
 
     def delete(self):
         """Delete an image."""
