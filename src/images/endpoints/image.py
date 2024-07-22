@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 
-from fastapi import APIRouter, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, HTTPException, status, UploadFile, File, Query, Response
 from pydantic import BaseModel
 
 from src.images.endpoints.base import Base
@@ -85,3 +85,66 @@ async def create_image(image_file: UploadFile = File(...)) -> Image:
         created=image.created,
         updated=image.updated,
     )
+
+
+@router.get("/list", status_code=status.HTTP_200_OK)
+async def list_images(
+    response: Response,
+    page: int = Query(1, gt=0, alias="page", description="The page number"),
+    limit: int = Query(
+        10,
+        gt=0,
+        lt=100,
+        alias="limit",
+        description="The maximum number of images per page",
+    ),
+) -> list[Image]:
+    """
+    Retrieve a list of images - always ordered by creation time (ASC).
+
+    Args:
+        response (Response): The FastAPI response object.
+        page (int): The page number.
+        limit (int): The maximum number of images per page.
+
+    Returns:
+        list[Image]: A list of Image objects representing images within the parameters
+            of the request.
+
+    Raises:
+        HTTPException: If there is a bad request or internal server error.
+    """
+    try:
+        logger.info(
+            f"Listing images as per page ({page}) and limit ({limit}) parameters"
+        )
+        result = ImageService().list(offset=(page - 1) * limit, limit=limit)
+    except ClientError as exc:
+        logger.error(f"Failed to list images: {exc.message}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=exc.message)
+    except ServerError as exc:
+        logger.error(f"Failed to list images: {exc.message}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=exc.message
+        )
+
+    # NOTE: To simplify client logic, no error is raised (i.e. 404) if no images are found.
+    logger.info(
+        f"Images listed for request (page={page} & limit={limit}): {result.query.count()}"
+    )
+
+    response.headers["X-Page"] = str(page)
+    response.headers["X-Page-Size"] = str(limit)
+    response.headers["X-Total-Count"] = str(result.total)
+    response.headers["X-Total-Pages"] = str((result.total - 1) // limit + 1)
+
+    return [
+        Image(
+            id=image.id,
+            status=image.status,
+            checksum=image.checksum,
+            created=image.created,
+            updated=image.updated,
+        )
+        for image in result.query
+    ]
