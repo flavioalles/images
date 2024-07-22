@@ -6,6 +6,11 @@ import pytest
 from src.images.models.image import Image
 
 
+# TODO: Fix storage leak of images in test cases on this module.
+# See TODO re:base_path in src/images/services/image.py as this is the cause of the
+# leak.
+
+
 class TestCreateImageEndpoint:
     """
     Test class for the create image endpoint.
