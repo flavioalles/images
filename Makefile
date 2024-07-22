@@ -13,7 +13,11 @@ help:
 
 .PHONY: repl
 repl:
-	@poetry run ipython
+	@if [ -z "${APP_DATABASE_URL}" ]; then \
+		echo "APP_DATABASE_URL is not set. Exiting."; \
+		exit 1; \
+	fi
+	@DATABASE_URL=${APP_DATABASE_URL} poetry run ipython
 
 .PHONY: check-style
 check-style:
