@@ -11,7 +11,13 @@ help:
 	@echo "\033[32mconnect-db\033[0m\t\tConnect to the images-db container"
 	@echo "\033[32mrun-tests\033[0m\t\tRun tests using pytest"
 	@echo "\033[32mrun-dev-app\033[0m\t\tRun the development version (i.e. reloading) of the (FastAPI) app"
+	@echo "\033[32mrun-alembic\033[0m\t\tRun alembic upgrade head"
 	@echo "\033[32mrun-app\033[0m\t\t\tRun the production version of the (FastAPI) app"
+	@echo "\033[32minstall-dev-app\033[0m\t\tInstall dependencies for development version of the app"
+	@echo "\033[32minstall-app\033[0m\t\tInstall dependencies for production version of the app"
+	@echo "\033[32mbuild-image\033[0m\t\tBuild a Docker image with the specified TAG"
+	@echo "\033[32mcompose-up\033[0m\t\tStart the Docker Compose services"
+	@echo "\033[32mcompose-down\033[0m\t\tStop the Docker Compose services"
 
 .PHONY: repl
 repl:
