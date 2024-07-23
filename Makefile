@@ -45,6 +45,8 @@ start-db:
 		exit 1; \
 	fi
 	@docker run --name images-db \
+		--env POSTGRES_DB=images \
+		--env POSTGRES_PASSWORD=postgres \
 		--env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
 		--publish 5432:5432 \
 		--rm \
@@ -75,10 +77,18 @@ run-dev-app:
 	fi
 	@DATABASE_URL=${APP_DATABASE_URL} poetry run fastapi dev src/images/endpoints/app.py
 
-.PHONY: run-app
-run-app:
+.PHONY: run-alembic
+run-alembic:
 	@if [ -z "${APP_DATABASE_URL}" ]; then \
 		echo "APP_DATABASE_URL is not set. Exiting."; \
 		exit 1; \
 	fi
-	@DATABASE_URL=${APP_DATABASE_URL} poetry run fastapi src/images/endpoints/app.py
+	@DATABASE_URL=${APP_DATABASE_URL} poetry run alembic upgrade head
+
+.PHONY: run-app
+run-app: run-alembic
+	@if [ -z "${APP_DATABASE_URL}" ]; then \
+		echo "APP_DATABASE_URL is not set. Exiting."; \
+		exit 1; \
+	fi
+	@DATABASE_URL=${APP_DATABASE_URL} poetry run fastapi run src/images/endpoints/app.py
