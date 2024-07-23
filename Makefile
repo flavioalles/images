@@ -45,6 +45,8 @@ start-db:
 		exit 1; \
 	fi
 	@docker run --name images-db \
+		--env POSTGRES_DB=images \
+		--env POSTGRES_PASSWORD=postgres \
 		--env POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
 		--publish 5432:5432 \
 		--rm \
