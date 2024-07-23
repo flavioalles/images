@@ -91,4 +91,4 @@ run-app: run-alembic
 		echo "APP_DATABASE_URL is not set. Exiting."; \
 		exit 1; \
 	fi
-	@DATABASE_URL=${APP_DATABASE_URL} poetry run fastapi src/images/endpoints/app.py
+	@DATABASE_URL=${APP_DATABASE_URL} poetry run fastapi run src/images/endpoints/app.py
