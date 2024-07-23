@@ -57,6 +57,7 @@ class TestCreateImageEndpoint:
         assert response.json()["updated"] == an_image.updated.strftime(
             "%Y-%m-%dT%H:%M:%S.%fZ"
         )
+        assert response.json()["path"] == str(an_image.path)
         assert response.json()["checksum"] == str(an_image.checksum)
         assert response.json()["status"] == str(an_image.status.value)
 
@@ -115,6 +116,7 @@ class TestListImagesEndpoint:
         assert large_image["updated"] == expected_large_image.updated.strftime(
             "%Y-%m-%dT%H:%M:%S.%fZ"
         )
+        assert large_image["path"] == expected_large_image.path
         assert large_image["checksum"] == expected_large_image.checksum
         assert large_image["status"] == expected_large_image.status.value
 
@@ -125,5 +127,6 @@ class TestListImagesEndpoint:
         assert small_image["updated"] == expected_small_image.updated.strftime(
             "%Y-%m-%dT%H:%M:%S.%fZ"
         )
+        assert small_image["path"] == expected_small_image.path
         assert small_image["checksum"] == expected_small_image.checksum
         assert small_image["status"] == expected_small_image.status.value

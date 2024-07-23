@@ -29,6 +29,7 @@ class Image(Base):
         checksum (str): The checksum of the image.
     """
 
+    path: str
     status: ImageStatus
     checksum: str
 
@@ -80,6 +81,7 @@ async def create_image(image_file: UploadFile = File(...)) -> Image:
 
     return Image(
         id=image.id,
+        path=image.path,
         status=image.status,
         checksum=image.checksum,
         created=image.created,
@@ -141,6 +143,7 @@ async def list_images(
     return [
         Image(
             id=image.id,
+            path=image.path,
             status=image.status,
             checksum=image.checksum,
             created=image.created,
