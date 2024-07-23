@@ -1,0 +1,33 @@
+services:
+  images-db:
+    image: postgres:15.7
+    environment:
+      POSTGRES_DB: images
+      POSTGRES_USER: postgres # TODO: fix use of root user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d images"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./data/db/:/var/lib/postgresql/data
+    networks:
+      - images-network
+
+  images-app:
+    image: ${TAG}
+    environment:
+      APP_DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@images-db:5432/images
+    ports:
+      - "8000:8000"
+    depends_on:
+      images-db:
+        condition: service_healthy
+    volumes:
+      - ./data/app/:/images/data/images
+    networks:
+      - images-network
+
+networks:
+  images-network: {}

@@ -92,3 +92,39 @@ run-app: run-alembic
 		exit 1; \
 	fi
 	@DATABASE_URL=${APP_DATABASE_URL} poetry run fastapi run src/images/endpoints/app.py
+
+.PHONY: install-dev-app
+install-dev-app:
+	@poetry install --with=dev
+
+.PHONY: install-app
+install-app:
+	@poetry install
+
+.PHONY: build-image
+build-image:
+	@if [ -z "${TAG}" ]; then \
+		echo "TAG unset. Exiting."; \
+		exit 1; \
+	fi
+	@docker build --tag $(TAG) .
+
+.PHONY: compose-up
+compose-up:
+	@if [ -z "${POSTGRES_PASSWORD}" ]; then \
+		echo "Error: POSTGRES_PASSWORD is not set. Exiting."; \
+		exit 1; \
+	fi
+	@if [ -z "${TAG}" ]; then \
+		echo "Error: TAG is not set. Exiting."; \
+		exit 1; \
+	fi
+	@docker-compose up
+
+.PHONY: compose-down
+compose-down:
+	@if [ -z "${TAG}" ]; then \
+		echo "Error: TAG is not set. Exiting."; \
+		exit 1; \
+	fi
+	@docker-compose down
